@@ -160,6 +160,13 @@ class TestWindow(wx.App):
             return s[0:len(s)-1]
         return s
 
+    @staticmethod
+    def pairtopos(pos: list) -> wx.Point:
+        return wx.Point((
+            int(TestWindow.fixstr(pos[0])),
+            int(TestWindow.fixstr(pos[1])))
+        )
+
     def init_frame(self):
         self.timeline = []
         self.time = None
@@ -187,28 +194,28 @@ class TestWindow(wx.App):
                     self.timeline.append(TimelineEvent(
                         None,
                         TimelineEventType.LEFT_DOWN,
-                        wx.Point((int(TestWindow.fixstr(pos[0])), int(TestWindow.fixstr(pos[1])))),
+                        TestWindow.pairtopos(pos),
                         0
                     ))
                 elif line.startswith(TimelineEventType.RIGHT_DOWN):
                     self.timeline.append(TimelineEvent(
                         None,
                         TimelineEventType.RIGHT_DOWN,
-                        wx.Point((int(TestWindow.fixstr(pos[0])), int(TestWindow.fixstr(pos[1])))),
+                        TestWindow.pairtopos(pos),
                         0
                     ))
                 elif line.startswith(TimelineEventType.LEFT_UP):
                     self.timeline.append(TimelineEvent(
                         None,
                         TimelineEventType.LEFT_UP,
-                        wx.Point((int(TestWindow.fixstr(pos[0])), int(TestWindow.fixstr(pos[1])))),
+                        TestWindow.pairtopos(pos),
                         0
                     ))
                 elif line.startswith(TimelineEventType.RIGHT_UP):
                     self.timeline.append(TimelineEvent(
                         None,
                         TimelineEventType.RIGHT_UP,
-                        wx.Point((int(TestWindow.fixstr(pos[0])), int(TestWindow.fixstr(pos[1])))),
+                        TestWindow.pairtopos(pos),
                         0
                     ))
         self.frame.Bind(wx.EVT_PAINT, self.OnPaint)
