@@ -11,7 +11,7 @@ class TimelineEventType:
     LEFT_UP = "LeftUp"
     RIGHT_UP = "RightUp"
     MOVE = "Move"
-    SLEEP = "sleep"
+    SLEEP = "Sleep"
 
 
 class TimelineEvent:
@@ -58,11 +58,11 @@ class InputWindow(wx.App):
             lastEvent = None
             framePos: wx.Point = self.frame.GetPosition()
             frameSize: wx.Size = self.frame.GetSize()
-            file.write(f'window:{framePos.x}:{framePos.y}:{frameSize.GetWidth()}:{frameSize.GetHeight()}\n')
+            file.write(f'Window:{framePos.x}:{framePos.y}:{frameSize.GetWidth()}:{frameSize.GetHeight()}\n')
             for t in self.timeline:
                 if lastEvent is not None:
                     diff: datetime.datetime = t.time - lastEvent.time
-                    file.write(f'sleep:{diff.total_seconds()}\n')
+                    file.write(f'{TimelineEventType.SLEEP}:{diff.total_seconds()}\n')
                 file.write(f'{t.kind}:{t.pos}\n')
                 lastEvent = t
         self.frame.Destroy()
@@ -209,7 +209,7 @@ class TestWindow(wx.App):
             for line in file:
                 line = line.strip()
                 args = line.split(':')[1:]
-                if line.startswith('window'):
+                if line.startswith('Window'):
                     self.frame.SetPosition((int(args[0]), int(args[1])))
                     self.frame.SetSize((int(args[2]), int(args[3])))
                 elif line.startswith(TimelineEventType.MOVE):
