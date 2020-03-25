@@ -13,31 +13,31 @@ class InputWindow(wx.App):
 
     def OnMouseLeftDown(self, event):
         pos = event.GetPosition()
-        self.frm_main.SetTitle('OnMouseLeftDown' + str(pos))
+        self.frame.SetTitle('OnMouseLeftDown' + str(pos))
 
     def OnMouseRightDown(self, event):
         pos = event.GetPosition()
-        self.frm_main.SetTitle('OnMouseRightDown' + str(pos))
+        self.frame.SetTitle('OnMouseRightDown' + str(pos))
 
     def OnMouseLeftUp(self, event):
         pos = event.GetPosition()
-        self.frm_main.SetTitle('OnMouseLeftUp' + str(pos))
+        self.frame.SetTitle('OnMouseLeftUp' + str(pos))
 
     def OnMouseRightUp(self, event):
         pos = event.GetPosition()
-        self.frm_main.SetTitle('OnMouseRightUp' + str(pos))
+        self.frame.SetTitle('OnMouseRightUp' + str(pos))
 
     def init_frame(self):
-        self.frm_main = wx.Frame(None)
-        self.frm_main.SetTitle("Hello, wxPython!")
-        self.frm_main.SetSize((800, 600))
-        self.frm_main.SetPosition((0, 0))
+        self.frame = wx.Frame(None)
+        self.frame.SetTitle("Hello, wxPython!")
+        self.frame.SetSize((800, 600))
+        self.frame.SetPosition((0, 0))
         # コールバックの登録
-        self.frm_main.Bind(wx.EVT_LEFT_DOWN, self.OnMouseLeftDown)
-        self.frm_main.Bind(wx.EVT_RIGHT_DOWN, self.OnMouseRightDown)
-        self.frm_main.Bind(wx.EVT_LEFT_UP, self.OnMouseLeftUp)
-        self.frm_main.Bind(wx.EVT_RIGHT_UP, self.OnMouseRightUp)
-        self.frm_main.Show()
+        self.frame.Bind(wx.EVT_LEFT_DOWN, self.OnMouseLeftDown)
+        self.frame.Bind(wx.EVT_RIGHT_DOWN, self.OnMouseRightDown)
+        self.frame.Bind(wx.EVT_LEFT_UP, self.OnMouseLeftUp)
+        self.frame.Bind(wx.EVT_RIGHT_UP, self.OnMouseRightUp)
+        self.frame.Show()
 
 
 def cmd_setup(args):
