@@ -10,6 +10,7 @@ class TimelineEventType:
     RIGHT_DOWN = "RightDown"
     LEFT_UP = "LeftUp"
     RIGHT_UP = "RightUp"
+    MOVE = "Move"
     SLEEP = "sleep"
 
 
@@ -98,6 +99,14 @@ class InputWindow(wx.App):
             pos)
         )
 
+    def OnMouseMove(self, event):
+        pos = event.GetPosition()
+        self.timeline.append(TimelineEvent(
+            datetime.datetime.now(),
+            TimelineEventType.MOVE,
+            pos)
+        )
+
     def init_frame(self):
         self.timeline = []
         self.frame = wx.Frame(None)
@@ -110,6 +119,7 @@ class InputWindow(wx.App):
         self.frame.Bind(wx.EVT_LEFT_UP, self.OnMouseLeftUp)
         self.frame.Bind(wx.EVT_RIGHT_UP, self.OnMouseRightUp)
         self.frame.Bind(wx.EVT_CLOSE, self.OnClose)
+        self.frame.Bind(wx.EVT_MOTION, self.OnMouseMove)
         self.frame.Show()
 
 
@@ -152,8 +162,13 @@ class TestWindow(wx.App):
             dc.SetPen(wx.BLUE_PEN)
             self.__draw_cross_point(dc, event.pos)
             self.timeline.pop(0)
+        elif event.kind == TimelineEventType.MOVE:
+            dc.DrawCircle(event.pos.x, event.pos.y, 2)
+            self.timeline.pop(0)
         elif event.kind == TimelineEventType.SLEEP:
             time: datetime.datetime = datetime.datetime.now()
+            if self.time is None:
+                self.time = datetime.datetime.now()
             if (time - self.time).total_seconds() > event.sleep:
                 self.timeline.pop(0)
             else:
@@ -197,10 +212,18 @@ class TestWindow(wx.App):
                 if line.startswith('window'):
                     self.frame.SetPosition((int(args[0]), int(args[1])))
                     self.frame.SetSize((int(args[2]), int(args[3])))
-                elif line.startswith('sleep'):
+                elif line.startswith(TimelineEventType.MOVE):
+                    pos = args[0].split(',')
                     self.timeline.append(TimelineEvent(
                         None,
-                        'sleep',
+                        TimelineEventType.LEFT_DOWN,
+                        TestWindow.pairtopos(pos),
+                        0
+                    ))
+                elif line.startswith(TimelineEventType.SLEEP):
+                    self.timeline.append(TimelineEvent(
+                        None,
+                        TimelineEventType.SLEEP,
                         None,
                         float(args[0])
                     ))
