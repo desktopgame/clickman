@@ -114,9 +114,24 @@ class TestWindow(wx.App):
         self.timeline = []
         self.frame = wx.Frame(None)
         self.frame.SetTitle("clickman")
-        self.frame.SetSize((800, 600))
-        self.frame.SetPosition((0, 0))
         self.frame.Show()
+        with open('clickman.txt', 'r') as file:
+            for line in file:
+                line = line.strip()
+                args = line.split(':')[1:]
+                if line.startswith('window'):
+                    self.frame.SetPosition((int(args[0]), int(args[1])))
+                    self.frame.SetSize((int(args[2]), int(args[3])))
+                elif line.startswith('sleep'):
+                    continue
+                elif line.startswith(TimelineEventType.LEFT_DOWN):
+                    continue
+                elif line.startswith(TimelineEventType.RIGHT_DOWN):
+                    continue
+                elif line.startswith(TimelineEventType.LEFT_UP):
+                    continue
+                elif line.startswith(TimelineEventType.RIGHT_UP):
+                    continue
 
 
 def cmd_setup(args):
