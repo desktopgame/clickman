@@ -72,10 +72,21 @@ class TestWindow(wx.App):
         self.frame.SetBackgroundStyle(wx.BG_STYLE_PAINT)
         self.timer = wx.Timer(self)
         self.timer.Start(1.0 / 60.0)
-        pt, si, li = tl.parse('clickman.txt')
-        self.frame.SetPosition(pt)
-        self.frame.SetSize(si)
-        self.timeline = li
         self.Bind(wx.EVT_TIMER, self.OnTimer)
         self.frame.Bind(wx.EVT_PAINT, self.OnPaint)
         self.frame.Show()
+
+    def load(self):
+        pt, si, li = tl.parse(self.file)
+        self.frame.SetPosition(pt)
+        self.frame.SetSize(si)
+        self.timeline = li
+
+    @property
+    def file(self) -> str:
+        return self.__file
+
+    @file.setter
+    def file(self, f: str):
+        self.__file = f
+

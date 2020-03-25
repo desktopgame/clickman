@@ -10,6 +10,7 @@ import time
 
 def cmd_setup(args):
     app = iw.InputWindow(False)
+    app.file = args.output
     app.MainLoop()
 
 
@@ -19,11 +20,13 @@ def cmd_test(args):
         exit(1)
         return
     app = tw.TestWindow(False)
+    app.file = args.input
+    app.load()
     app.MainLoop()
 
 
 def cmd_run(args):
-    _, _, li = tl.parse('clickman.txt')
+    _, _, li = tl.parse(args.input)
     for event in li:
         if event.kind == tl.TimelineEventType.LEFT_DOWN:
             pyautogui.mouseDown(event.pos.x, event.pos.y, 'left')
@@ -46,15 +49,17 @@ def main():
     # `setup` コマンドの parser を作成
     parser_setup = subparsers.add_parser('setup', help='see `setup -h`')
     parser_setup.set_defaults(handler=cmd_setup)
+    parser_setup.add_argument('--output', default='clickman.txt')
 
     # `test` コマンドの parser を作成
     parser_test = subparsers.add_parser('test', help='see `test -h`')
     parser_test.set_defaults(handler=cmd_test)
-
+    parser_test.add_argument('--input', default='clickman.txt')
 
     # `run` コマンドの parser を作成
     parser_run = subparsers.add_parser('run', help='see `run -h`')
     parser_run.set_defaults(handler=cmd_run)
+    parser_run.add_argument('--input', default='clickman.txt')
 
     # コマンドラインを解析して実行
     args = parser.parse_args()

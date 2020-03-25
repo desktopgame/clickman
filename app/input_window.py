@@ -12,7 +12,7 @@ class InputWindow(wx.App):
         return True
 
     def OnClose(self, event):
-        with open('clickman.txt', 'w') as file:
+        with open(self.file, 'w') as file:
             t: tl.TimelineEvent
             lastEvent: tl.TimelineEvent
             lastEvent = None
@@ -81,3 +81,11 @@ class InputWindow(wx.App):
         self.frame.Bind(wx.EVT_CLOSE, self.OnClose)
         self.frame.Bind(wx.EVT_MOTION, self.OnMouseMove)
         self.frame.Show()
+
+    @property
+    def file(self) -> str:
+        return self.__file
+
+    @file.setter
+    def file(self, f: str):
+        self.__file = f
