@@ -1,6 +1,33 @@
 import pyautogui
 import argparse
 import wx
+import datetime
+
+
+class TimelineEventType:
+    LEFT_DOWN = "LeftDown"
+    RIGHT_DOWN = "RightDown"
+    LEFT_UP = "LeftUp"
+    RIGHT_UP = "RightUp"
+
+
+class TimelineEvent:
+    def __init__(self, time: datetime.datetime, kind: str, pos: wx.Point):
+        self.__time = time
+        self.__kind = kind
+        self.__pos = pos
+
+    @property
+    def time(self) -> datetime.datetime:
+        return self.__time
+
+    @property
+    def kind(self) -> str:
+        return self.__kind
+
+    @property
+    def pos(self) -> wx.Point:
+        return self.__pos
 
 
 class InputWindow(wx.App):
@@ -11,25 +38,49 @@ class InputWindow(wx.App):
         self.init_frame()
         return True
 
+    def OnClose(self, event):
+        with open('clickman.txt', 'w') as file:
+            t: TimelineEvent
+            for t in self.timeline:
+                file.write(f'{t.kind}:{t.pos}\n')
+        self.frame.Destroy()
+
     def OnMouseLeftDown(self, event):
         pos = event.GetPosition()
-        self.frame.SetTitle('OnMouseLeftDown' + str(pos))
+        self.timeline.append(TimelineEvent(
+            datetime.datetime.now(),
+            TimelineEventType.LEFT_DOWN,
+            pos)
+        )
 
     def OnMouseRightDown(self, event):
         pos = event.GetPosition()
-        self.frame.SetTitle('OnMouseRightDown' + str(pos))
+        self.timeline.append(TimelineEvent(
+            datetime.datetime.now(),
+            TimelineEventType.RIGHT_DOWN,
+            pos)
+        )
 
     def OnMouseLeftUp(self, event):
         pos = event.GetPosition()
-        self.frame.SetTitle('OnMouseLeftUp' + str(pos))
+        self.timeline.append(TimelineEvent(
+            datetime.datetime.now(),
+            TimelineEventType.LEFT_UP,
+            pos)
+        )
 
     def OnMouseRightUp(self, event):
         pos = event.GetPosition()
-        self.frame.SetTitle('OnMouseRightUp' + str(pos))
+        self.timeline.append(TimelineEvent(
+            datetime.datetime.now(),
+            TimelineEventType.RIGHT_UP,
+            pos)
+        )
 
     def init_frame(self):
+        self.timeline = []
         self.frame = wx.Frame(None)
-        self.frame.SetTitle("Hello, wxPython!")
+        self.frame.SetTitle("clickman")
         self.frame.SetSize((800, 600))
         self.frame.SetPosition((0, 0))
         # コールバックの登録
@@ -37,6 +88,7 @@ class InputWindow(wx.App):
         self.frame.Bind(wx.EVT_RIGHT_DOWN, self.OnMouseRightDown)
         self.frame.Bind(wx.EVT_LEFT_UP, self.OnMouseLeftUp)
         self.frame.Bind(wx.EVT_RIGHT_UP, self.OnMouseRightUp)
+        self.frame.Bind(wx.EVT_CLOSE, self.OnClose)
         self.frame.Show()
 
 
