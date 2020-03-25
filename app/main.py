@@ -15,8 +15,8 @@ def cmd_setup(args):
 
 
 def cmd_test(args):
-    if not os.path.exists("clickman.txt"):
-        print('clickman.txt is not found')
+    if not os.path.exists(args.input):
+        print(f'{args.input} is not found')
         exit(1)
         return
     app = tw.TestWindow(False)
