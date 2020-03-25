@@ -1,6 +1,6 @@
 import wx
 import datetime
-import timeline as tw
+import timeline as tl
 
 
 class TestWindow(wx.App):
@@ -26,26 +26,26 @@ class TestWindow(wx.App):
             self.frame.Destroy()
             return
         event = self.timeline[0]
-        if event.kind == tw.TimelineEventType.LEFT_DOWN:
+        if event.kind == tl.TimelineEventType.LEFT_DOWN:
             dc.SetPen(wx.RED_PEN)
             self.__draw_cross_point(dc, event.pos)
             self.timeline.pop(0)
-        elif event.kind == tw.TimelineEventType.RIGHT_DOWN:
+        elif event.kind == tl.TimelineEventType.RIGHT_DOWN:
             dc.SetPen(wx.RED_PEN)
             self.__draw_cross_point(dc, event.pos)
             self.timeline.pop(0)
-        elif event.kind == tw.TimelineEventType.LEFT_UP:
+        elif event.kind == tl.TimelineEventType.LEFT_UP:
             dc.SetPen(wx.BLUE_PEN)
             self.__draw_cross_point(dc, event.pos)
             self.timeline.pop(0)
-        elif event.kind == tw.TimelineEventType.RIGHT_UP:
+        elif event.kind == tl.TimelineEventType.RIGHT_UP:
             dc.SetPen(wx.BLUE_PEN)
             self.__draw_cross_point(dc, event.pos)
             self.timeline.pop(0)
-        elif event.kind == tw.TimelineEventType.MOVE:
+        elif event.kind == tl.TimelineEventType.MOVE:
             dc.DrawCircle(event.pos.x, event.pos.y, 2)
             self.timeline.pop(0)
-        elif event.kind == tw.TimelineEventType.SLEEP:
+        elif event.kind == tl.TimelineEventType.SLEEP:
             time: datetime.datetime = datetime.datetime.now()
             if self.time is None:
                 self.time = datetime.datetime.now()
@@ -95,47 +95,47 @@ class TestWindow(wx.App):
                 if line.startswith('Window'):
                     self.frame.SetPosition((int(args[0]), int(args[1])))
                     self.frame.SetSize((int(args[2]), int(args[3])))
-                elif line.startswith(tw.TimelineEventType.MOVE):
+                elif line.startswith(tl.TimelineEventType.MOVE):
                     pos = args[0].split(',')
-                    self.timeline.append(tw.TimelineEvent(
+                    self.timeline.append(tl.TimelineEvent(
                         None,
-                        tw.TimelineEventType.LEFT_DOWN,
+                        tl.TimelineEventType.LEFT_DOWN,
                         TestWindow.pairtopos(pos),
                         0
                     ))
-                elif line.startswith(tw.TimelineEventType.SLEEP):
-                    self.timeline.append(tw.TimelineEvent(
+                elif line.startswith(tl.TimelineEventType.SLEEP):
+                    self.timeline.append(tl.TimelineEvent(
                         None,
-                        tw.TimelineEventType.SLEEP,
+                        tl.TimelineEventType.SLEEP,
                         None,
                         float(args[0])
                     ))
-                elif line.startswith(tw.TimelineEventType.LEFT_DOWN):
+                elif line.startswith(tl.TimelineEventType.LEFT_DOWN):
                     pos = args[0].split(',')
-                    self.timeline.append(tw.TimelineEvent(
+                    self.timeline.append(tl.TimelineEvent(
                         None,
-                        tw.TimelineEventType.LEFT_DOWN,
+                        tl.TimelineEventType.LEFT_DOWN,
                         TestWindow.pairtopos(pos),
                         0
                     ))
-                elif line.startswith(tw.TimelineEventType.RIGHT_DOWN):
-                    self.timeline.append(tw.TimelineEvent(
+                elif line.startswith(tl.TimelineEventType.RIGHT_DOWN):
+                    self.timeline.append(tl.TimelineEvent(
                         None,
-                        tw.TimelineEventType.RIGHT_DOWN,
+                        tl.TimelineEventType.RIGHT_DOWN,
                         TestWindow.pairtopos(pos),
                         0
                     ))
-                elif line.startswith(tw.TimelineEventType.LEFT_UP):
-                    self.timeline.append(tw.TimelineEvent(
+                elif line.startswith(tl.TimelineEventType.LEFT_UP):
+                    self.timeline.append(tl.TimelineEvent(
                         None,
-                        tw.TimelineEventType.LEFT_UP,
+                        tl.TimelineEventType.LEFT_UP,
                         TestWindow.pairtopos(pos),
                         0
                     ))
-                elif line.startswith(tw.TimelineEventType.RIGHT_UP):
-                    self.timeline.append(tw.TimelineEvent(
+                elif line.startswith(tl.TimelineEventType.RIGHT_UP):
+                    self.timeline.append(tl.TimelineEvent(
                         None,
-                        tw.TimelineEventType.RIGHT_UP,
+                        tl.TimelineEventType.RIGHT_UP,
                         TestWindow.pairtopos(pos),
                         0
                     ))

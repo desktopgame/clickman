@@ -1,6 +1,6 @@
 import wx
 import datetime
-import timeline as tw
+import timeline as tl
 
 
 class InputWindow(wx.App):
@@ -13,8 +13,8 @@ class InputWindow(wx.App):
 
     def OnClose(self, event):
         with open('clickman.txt', 'w') as file:
-            t: tw.TimelineEvent
-            lastEvent: tw.TimelineEvent
+            t: tl.TimelineEvent
+            lastEvent: tl.TimelineEvent
             lastEvent = None
             framePos: wx.Point = self.frame.GetPosition()
             frameSize: wx.Size = self.frame.GetSize()
@@ -22,48 +22,48 @@ class InputWindow(wx.App):
             for t in self.timeline:
                 if lastEvent is not None:
                     diff: datetime.datetime = t.time - lastEvent.time
-                    file.write(f'{tw.TimelineEventType.SLEEP}:{diff.total_seconds()}\n')
+                    file.write(f'{tl.TimelineEventType.SLEEP}:{diff.total_seconds()}\n')
                 file.write(f'{t.kind}:{t.pos}\n')
                 lastEvent = t
         self.frame.Destroy()
 
     def OnMouseLeftDown(self, event):
         pos = event.GetPosition()
-        self.timeline.append(tw.TimelineEvent(
+        self.timeline.append(tl.TimelineEvent(
             datetime.datetime.now(),
-            tw.TimelineEventType.LEFT_DOWN,
+            tl.TimelineEventType.LEFT_DOWN,
             pos)
         )
 
     def OnMouseRightDown(self, event):
         pos = event.GetPosition()
-        self.timeline.append(tw.TimelineEvent(
+        self.timeline.append(tl.TimelineEvent(
             datetime.datetime.now(),
-            tw.TimelineEventType.RIGHT_DOWN,
+            tl.TimelineEventType.RIGHT_DOWN,
             pos)
         )
 
     def OnMouseLeftUp(self, event):
         pos = event.GetPosition()
-        self.timeline.append(tw.TimelineEvent(
+        self.timeline.append(tl.TimelineEvent(
             datetime.datetime.now(),
-            tw.TimelineEventType.LEFT_UP,
+            tl.TimelineEventType.LEFT_UP,
             pos)
         )
 
     def OnMouseRightUp(self, event):
         pos = event.GetPosition()
-        self.timeline.append(tw.TimelineEvent(
+        self.timeline.append(tl.TimelineEvent(
             datetime.datetime.now(),
-            tw.TimelineEventType.RIGHT_UP,
+            tl.TimelineEventType.RIGHT_UP,
             pos)
         )
 
     def OnMouseMove(self, event):
         pos = event.GetPosition()
-        self.timeline.append(tw.TimelineEvent(
+        self.timeline.append(tl.TimelineEvent(
             datetime.datetime.now(),
-            tw.TimelineEventType.MOVE,
+            tl.TimelineEventType.MOVE,
             pos)
         )
 
