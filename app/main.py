@@ -10,6 +10,7 @@ class TimelineEventType:
     RIGHT_DOWN = "RightDown"
     LEFT_UP = "LeftUp"
     RIGHT_UP = "RightUp"
+    SLEEP = "sleep"
 
 
 class TimelineEvent:
@@ -151,7 +152,7 @@ class TestWindow(wx.App):
             dc.SetPen(wx.BLUE_PEN)
             self.__draw_cross_point(dc, event.pos)
             self.timeline.pop(0)
-        elif event.kind == 'sleep':
+        elif event.kind == TimelineEventType.SLEEP:
             time: datetime.datetime = datetime.datetime.now()
             if (time - self.time).total_seconds() > event.sleep:
                 self.timeline.pop(0)
