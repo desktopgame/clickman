@@ -41,8 +41,14 @@ class InputWindow(wx.App):
     def OnClose(self, event):
         with open('clickman.txt', 'w') as file:
             t: TimelineEvent
+            lastEvent: TimelineEvent
+            lastEvent = None
             for t in self.timeline:
+                if lastEvent is not None:
+                    diff: datetime.datetime = t.time - lastEvent.time
+                    file.write(f'sleep:{diff.total_seconds()}\n')
                 file.write(f'{t.kind}:{t.pos}\n')
+                lastEvent = t
         self.frame.Destroy()
 
     def OnMouseLeftDown(self, event):
