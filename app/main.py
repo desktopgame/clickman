@@ -120,22 +120,36 @@ class TestWindow(wx.App):
         self.init_frame()
         return True
 
+    def __draw_cross_point(self, dc: wx.AutoBufferedPaintDC, pos: wx.Point):
+        size: wx.Size = self.frame.GetSize()
+        dc.DrawLine(0, 0, pos.x, pos.y)
+        dc.DrawLine(size.x, 0, pos.x, pos.y)
+        dc.DrawLine(0, size.y, pos.x, pos.y)
+        dc.DrawLine(size.x, size.y, pos.x, pos.y)
+
     def OnPaint(self, event):
         dc = wx.AutoBufferedPaintDC(self.frame)
         dc.Clear()
         if len(self.timeline) == 0:
+            self.timer.Stop()
             self.frame.Destroy()
             return
         event = self.timeline[0]
         if event.kind == TimelineEventType.LEFT_DOWN:
             dc.SetPen(wx.RED_PEN)
-            dc.DrawLine(0, 0, event.pos.x, event.pos.y)
+            self.__draw_cross_point(dc, event.pos)
             self.timeline.pop(0)
         elif event.kind == TimelineEventType.RIGHT_DOWN:
+            dc.SetPen(wx.RED_PEN)
+            self.__draw_cross_point(dc, event.pos)
             self.timeline.pop(0)
         elif event.kind == TimelineEventType.LEFT_UP:
+            dc.SetPen(wx.BLUE_PEN)
+            self.__draw_cross_point(dc, event.pos)
             self.timeline.pop(0)
         elif event.kind == TimelineEventType.RIGHT_UP:
+            dc.SetPen(wx.BLUE_PEN)
+            self.__draw_cross_point(dc, event.pos)
             self.timeline.pop(0)
         elif event.kind == 'sleep':
             time: datetime.datetime = datetime.datetime.now()
