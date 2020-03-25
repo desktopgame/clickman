@@ -65,80 +65,17 @@ class TestWindow(wx.App):
         if self.timer is not None and self.frame is not None:
             self.frame.Refresh()
 
-    @staticmethod
-    def fixstr(s: str):
-        if s[0] == '(':
-            return s[1:]
-        elif s[len(s)-1] == ')':
-            return s[0:len(s)-1]
-        return s
-
-    @staticmethod
-    def pairtopos(pos: list) -> wx.Point:
-        return wx.Point((
-            int(TestWindow.fixstr(pos[0])),
-            int(TestWindow.fixstr(pos[1])))
-        )
-
     def init_frame(self):
-        self.timeline = []
         self.time = None
         self.frame = wx.Frame(None)
         self.frame.SetTitle("clickman")
         self.frame.SetBackgroundStyle(wx.BG_STYLE_PAINT)
         self.timer = wx.Timer(self)
         self.timer.Start(1.0 / 60.0)
-        with open('clickman.txt', 'r') as file:
-            for line in file:
-                line = line.strip()
-                args = line.split(':')[1:]
-                if line.startswith('Window'):
-                    self.frame.SetPosition((int(args[0]), int(args[1])))
-                    self.frame.SetSize((int(args[2]), int(args[3])))
-                elif line.startswith(tl.TimelineEventType.MOVE):
-                    pos = args[0].split(',')
-                    self.timeline.append(tl.TimelineEvent(
-                        None,
-                        tl.TimelineEventType.LEFT_DOWN,
-                        TestWindow.pairtopos(pos),
-                        0
-                    ))
-                elif line.startswith(tl.TimelineEventType.SLEEP):
-                    self.timeline.append(tl.TimelineEvent(
-                        None,
-                        tl.TimelineEventType.SLEEP,
-                        None,
-                        float(args[0])
-                    ))
-                elif line.startswith(tl.TimelineEventType.LEFT_DOWN):
-                    pos = args[0].split(',')
-                    self.timeline.append(tl.TimelineEvent(
-                        None,
-                        tl.TimelineEventType.LEFT_DOWN,
-                        TestWindow.pairtopos(pos),
-                        0
-                    ))
-                elif line.startswith(tl.TimelineEventType.RIGHT_DOWN):
-                    self.timeline.append(tl.TimelineEvent(
-                        None,
-                        tl.TimelineEventType.RIGHT_DOWN,
-                        TestWindow.pairtopos(pos),
-                        0
-                    ))
-                elif line.startswith(tl.TimelineEventType.LEFT_UP):
-                    self.timeline.append(tl.TimelineEvent(
-                        None,
-                        tl.TimelineEventType.LEFT_UP,
-                        TestWindow.pairtopos(pos),
-                        0
-                    ))
-                elif line.startswith(tl.TimelineEventType.RIGHT_UP):
-                    self.timeline.append(tl.TimelineEvent(
-                        None,
-                        tl.TimelineEventType.RIGHT_UP,
-                        TestWindow.pairtopos(pos),
-                        0
-                    ))
-        self.frame.Bind(wx.EVT_PAINT, self.OnPaint)
+        pt, si, li = tl.parse('clickman.txt')
+        self.frame.SetPosition(pt)
+        self.frame.SetSize(si)
+        self.timeline = li
         self.Bind(wx.EVT_TIMER, self.OnTimer)
+        self.frame.Bind(wx.EVT_PAINT, self.OnPaint)
         self.frame.Show()
