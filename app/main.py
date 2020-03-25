@@ -262,14 +262,6 @@ parser_setup.set_defaults(handler=cmd_setup)
 parser_test = subparsers.add_parser('test', help='see `test -h`')
 parser_test.set_defaults(handler=cmd_test)
 
-# コマンドの内容に関係なくインフォメーションを表示
-screen_x, screen_y = pyautogui.size()
-mouse_x, mouse_y = pyautogui.position()
-
-print(f'screenX={screen_x} screenY={screen_y}')
-print(f'mouseX={mouse_x} mouseY={mouse_y}')
-
-
 # コマンドラインを解析して実行
 args = parser.parse_args()
 if hasattr(args, 'handler'):
