@@ -13,10 +13,16 @@ class TimelineEventType:
 
 
 class TimelineEvent:
-    def __init__(self, time: datetime.datetime, kind: str, pos: wx.Point):
+    def __init__(
+        self,
+        time: datetime.datetime,
+        kind: str, pos: wx.Point,
+        sleep: float = 0
+    ):
         self.__time = time
         self.__kind = kind
         self.__pos = pos
+        self.__sleep = sleep
 
     @property
     def time(self) -> datetime.datetime:
@@ -29,6 +35,10 @@ class TimelineEvent:
     @property
     def pos(self) -> wx.Point:
         return self.__pos
+
+    @property
+    def sleep(self) -> float:
+        return self.__sleep
 
 
 class InputWindow(wx.App):
@@ -110,11 +120,54 @@ class TestWindow(wx.App):
         self.init_frame()
         return True
 
+    def OnPaint(self, event):
+        dc = wx.AutoBufferedPaintDC(self.frame)
+        dc.Clear()
+        if len(self.timeline) == 0:
+            self.frame.Destroy()
+            return
+        event = self.timeline[0]
+        if event.kind == TimelineEventType.LEFT_DOWN:
+            dc.SetPen(wx.RED_PEN)
+            dc.DrawLine(0, 0, event.pos.x, event.pos.y)
+            self.timeline.pop(0)
+        elif event.kind == TimelineEventType.RIGHT_DOWN:
+            self.timeline.pop(0)
+        elif event.kind == TimelineEventType.LEFT_UP:
+            self.timeline.pop(0)
+        elif event.kind == TimelineEventType.RIGHT_UP:
+            self.timeline.pop(0)
+        elif event.kind == 'sleep':
+            time: datetime.datetime = datetime.datetime.now()
+            if (time - self.time).total_seconds() > event.sleep:
+                self.timeline.pop(0)
+            else:
+                return
+        self.time = datetime.datetime.now()
+
+    def OnClose(self, event):
+        self.timer.Stop()
+        self.Destroy()
+
+    def OnTimer(self, event):
+        self.frame.Refresh()
+
+    @staticmethod
+    def fixstr(s: str):
+        if s[0] == '(':
+            return s[1:]
+        elif s[len(s)-1] == ')':
+            return s[0:len(s)-1]
+        return s
+
     def init_frame(self):
         self.timeline = []
+        self.time = None
         self.frame = wx.Frame(None)
         self.frame.SetTitle("clickman")
-        self.frame.Show()
+        self.frame.SetBackgroundStyle(wx.BG_STYLE_PAINT)
+        self.timer = wx.Timer(self)
+        self.timer.Start(1.0 / 60.0)
         with open('clickman.txt', 'r') as file:
             for line in file:
                 line = line.strip()
@@ -123,15 +176,44 @@ class TestWindow(wx.App):
                     self.frame.SetPosition((int(args[0]), int(args[1])))
                     self.frame.SetSize((int(args[2]), int(args[3])))
                 elif line.startswith('sleep'):
-                    continue
+                    self.timeline.append(TimelineEvent(
+                        None,
+                        'sleep',
+                        None,
+                        float(args[0])
+                    ))
                 elif line.startswith(TimelineEventType.LEFT_DOWN):
-                    continue
+                    pos = args[0].split(',')
+                    self.timeline.append(TimelineEvent(
+                        None,
+                        TimelineEventType.LEFT_DOWN,
+                        wx.Point((int(TestWindow.fixstr(pos[0])), int(TestWindow.fixstr(pos[1])))),
+                        0
+                    ))
                 elif line.startswith(TimelineEventType.RIGHT_DOWN):
-                    continue
+                    self.timeline.append(TimelineEvent(
+                        None,
+                        TimelineEventType.RIGHT_DOWN,
+                        wx.Point((int(TestWindow.fixstr(pos[0])), int(TestWindow.fixstr(pos[1])))),
+                        0
+                    ))
                 elif line.startswith(TimelineEventType.LEFT_UP):
-                    continue
+                    self.timeline.append(TimelineEvent(
+                        None,
+                        TimelineEventType.LEFT_UP,
+                        wx.Point((int(TestWindow.fixstr(pos[0])), int(TestWindow.fixstr(pos[1])))),
+                        0
+                    ))
                 elif line.startswith(TimelineEventType.RIGHT_UP):
-                    continue
+                    self.timeline.append(TimelineEvent(
+                        None,
+                        TimelineEventType.RIGHT_UP,
+                        wx.Point((int(TestWindow.fixstr(pos[0])), int(TestWindow.fixstr(pos[1])))),
+                        0
+                    ))
+        self.frame.Bind(wx.EVT_PAINT, self.OnPaint)
+        self.Bind(wx.EVT_TIMER, self.OnTimer)
+        self.frame.Show()
 
 
 def cmd_setup(args):
