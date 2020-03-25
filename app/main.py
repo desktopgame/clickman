@@ -2,6 +2,7 @@ import pyautogui
 import argparse
 import wx
 import datetime
+import os
 
 
 class TimelineEventType:
@@ -43,6 +44,9 @@ class InputWindow(wx.App):
             t: TimelineEvent
             lastEvent: TimelineEvent
             lastEvent = None
+            framePos: wx.Point = self.frame.GetPosition()
+            frameSize: wx.Size = self.frame.GetSize()
+            file.write(f'window:{framePos.x}:{framePos.y}:{frameSize.GetWidth()}:{frameSize.GetHeight()}\n')
             for t in self.timeline:
                 if lastEvent is not None:
                     diff: datetime.datetime = t.time - lastEvent.time
@@ -98,13 +102,35 @@ class InputWindow(wx.App):
         self.frame.Show()
 
 
+class TestWindow(wx.App):
+    """
+    TestWindow は、ユーザの記録を再生するためのウィンドウです。
+    """
+    def OnInit(self):
+        self.init_frame()
+        return True
+
+    def init_frame(self):
+        self.timeline = []
+        self.frame = wx.Frame(None)
+        self.frame.SetTitle("clickman")
+        self.frame.SetSize((800, 600))
+        self.frame.SetPosition((0, 0))
+        self.frame.Show()
+
+
 def cmd_setup(args):
     app = InputWindow(False)
     app.MainLoop()
 
 
 def cmd_test(args):
-    pass
+    if not os.path.exists("clickman.txt"):
+        print('clickman.txt is not found')
+        exit(1)
+        return
+    app = TestWindow(False)
+    app.MainLoop()
 
 
 parser: argparse.ArgumentParser = argparse.ArgumentParser()
