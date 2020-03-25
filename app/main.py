@@ -39,25 +39,30 @@ def cmd_run(args):
             time.sleep(event.sleep)
 
 
-parser: argparse.ArgumentParser = argparse.ArgumentParser()
-subparsers = parser.add_subparsers()
+def main():
+    parser: argparse.ArgumentParser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers()
 
-# `setup` コマンドの parser を作成
-parser_setup = subparsers.add_parser('setup', help='see `setup -h`')
-parser_setup.set_defaults(handler=cmd_setup)
+    # `setup` コマンドの parser を作成
+    parser_setup = subparsers.add_parser('setup', help='see `setup -h`')
+    parser_setup.set_defaults(handler=cmd_setup)
 
-# `test` コマンドの parser を作成
-parser_test = subparsers.add_parser('test', help='see `test -h`')
-parser_test.set_defaults(handler=cmd_test)
+    # `test` コマンドの parser を作成
+    parser_test = subparsers.add_parser('test', help='see `test -h`')
+    parser_test.set_defaults(handler=cmd_test)
 
 
-# `run` コマンドの parser を作成
-parser_run = subparsers.add_parser('run', help='see `run -h`')
-parser_run.set_defaults(handler=cmd_run)
+    # `run` コマンドの parser を作成
+    parser_run = subparsers.add_parser('run', help='see `run -h`')
+    parser_run.set_defaults(handler=cmd_run)
 
-# コマンドラインを解析して実行
-args = parser.parse_args()
-if hasattr(args, 'handler'):
-    args.handler(args)
-else:
-    parser.print_help()
+    # コマンドラインを解析して実行
+    args = parser.parse_args()
+    if hasattr(args, 'handler'):
+        args.handler(args)
+    else:
+        parser.print_help()
+
+
+if __name__ == '__main__':
+    main()
