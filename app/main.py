@@ -3,6 +3,9 @@ import os
 import input_window
 import input_window as iw
 import test_window as tw
+import timeline as tl
+import pyautogui
+import time
 
 
 def cmd_setup(args):
@@ -19,6 +22,23 @@ def cmd_test(args):
     app.MainLoop()
 
 
+def cmd_run(args):
+    _, _, li = tl.parse('clickman.txt')
+    for event in li:
+        if event.kind == tl.TimelineEventType.LEFT_DOWN:
+            pyautogui.mouseDown(event.pos.x, event.pos.y, 'left')
+        elif event.kind == tl.TimelineEventType.RIGHT_DOWN:
+            pyautogui.mouseDown(event.pos.x, event.pos.y, 'right')
+        elif event.kind == tl.TimelineEventType.LEFT_UP:
+            pyautogui.mouseUp(event.pos.x, event.pos.y, 'left')
+        elif event.kind == tl.TimelineEventType.RIGHT_UP:
+            pyautogui.mouseUp(event.pos.x, event.pos.y, 'right')
+        elif event.kind == tl.TimelineEventType.MOVE:
+            pyautogui.moveTo(event.pos.x, event.pos.y)
+        elif event.kind == tl.TimelineEventType.SLEEP:
+            time.sleep(event.sleep)
+
+
 parser: argparse.ArgumentParser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers()
 
@@ -29,6 +49,11 @@ parser_setup.set_defaults(handler=cmd_setup)
 # `test` コマンドの parser を作成
 parser_test = subparsers.add_parser('test', help='see `test -h`')
 parser_test.set_defaults(handler=cmd_test)
+
+
+# `run` コマンドの parser を作成
+parser_run = subparsers.add_parser('run', help='see `run -h`')
+parser_run.set_defaults(handler=cmd_run)
 
 # コマンドラインを解析して実行
 args = parser.parse_args()
